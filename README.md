@@ -1,54 +1,89 @@
-## Customize this file after creating the new REPO and remove this lines.
-What to adjust:  
-* Add the your project or repo name direct under the logo.
-* Add a short and long desciption.
-* Add links for your final repo to report a bug or request a feature.
-* Add list of used technologies.
-* If you have, add a roadmap or remove this section.
-* Fill up the section for set up and documentation.
- * Start in this file only with documentation and link to the docs folder.
-* Add more project shields. Use [shields.io](https://shields.io/) with style `for-the-badge`.
+[open-issues]: https://github.com/it-at-m/keycloak-require-role-authenticator-plugin/issues
+[new-issue]: https://github.com/it-at-m/keycloak-require-role-authenticator-plugin/issues/new/choose
+[license]: ./LICENSE
+[new-issue-shield]: https://img.shields.io/badge/new%20issue-blue?style=for-the-badge
+[made-with-love-shield]: https://img.shields.io/badge/made%20with%20%E2%9D%A4%20by-it%40M-yellow?style=for-the-badge
+[license-shield]: https://img.shields.io/github/license/it-at-m/refarch?style=for-the-badge
+[itm-opensource]: https://opensource.muenchen.de/
 
-## ------- end to remove -------
-<!-- add Project Logo, if existing -->
+# keycloak-require-role-authenticator-plugin
 
-# repo or project name
-
+[![New issue][new-issue-shield]][new-issue]
 [![Made with love by it@M][made-with-love-shield]][itm-opensource]
-<!-- feel free to add more shields, style 'for-the-badge' -> see https://shields.io/badges -->
+[![GitHub license][license-shield]][license]
 
-*Add a description from your project here.*
+Plugin for requiring a specific header and value being present or not present.
+
+This example has been taken from https://github.com/thomasdarimont/keycloak-extension-playground from the directory `auth-require-role-extension`
+and ported to Keycloak v26.
+
+![Custom Browser Flow](browser-flow-keycloak26.png)
+
+## Built With
+
+- OpenJDK 21
+- Keycloak 26
+
+## Test
+
+The following setup was tested:
+
+- keycloak 26, Realm "muenchen.de"
+- Clients: "client-a" with no client roles, "client-b" with client role "clientrole"
+- User: user1 (PW: user1) und user2 (PW: user2); user1 has role "clientrole" from client "client-b"
+- Browser-flow "browser-with-require-role" with execution "require role", which requires "${clientId}.clientrole"
+
+Client A (no client role needed, "user1" and "user2" can log in)
+https://localhost:8443/auth/realms/muenchen.de/protocol/openid-connect/auth?response_type=code&client_id=client-a&scope=openid%20profile%20email&state=1Gvul5jnemCt6KKoqP1nSDpDMPT6ZS-JgxEO0BUHESE%3D&redirect_uri=http%3A%2F%2Fwww.example.org&nonce=3HdXbB11Op2y0Exn-qIgyCS_F-2PaSkGaFPNoEqliCs
+
+Client B (needs client role "clientrole", only "user1" can log in)
+https://localhost:8443/auth/realms/muenchen.de/protocol/openid-connect/auth?response_type=code&client_id=client-b&scope=openid%20profile%20email&state=1Gvul5jnemCt6KKoqP1nSDpDMPT6ZS-JgxEO0BUHESE%3D&redirect_uri=http%3A%2F%2Fwww.example.org&nonce=3HdXbB11Op2y0Exn-qIgyCS_F-2PaSkGaFPNoEqliCs
 
 
-### Built With
+## From the original readme
 
-The documentation project is built with technologies we use in our projects:
+This example provides a custom `require-role` authenticator, that allows access to clients based on a client role.
+The authenticator configuration supports a dynamic role expression to resolve the required role that a user needs
+to have in order to access a client.
 
-* *write here the list of used technologies*
+The role expression can be a fixed realm role, a fixed client role or a dynamic client role.
+An expression without a dot is considered to be a realm role.
+
+### Fixed realm role
+The expression `user` would require that a user has the realm role `user` in order to access the application.
+
+### Fixed client role
+The expression `client1.user` would require that a user has the role `user` for `client1` in order to access the application.
+If `client1` does not have the `user` role this check is ignored.
+
+### Dynamic client role
+The expression `${clientId}.user` would require that a user has the role `user` for the given target client in order to access the application.
+If the target client does not have the `user` role this check is ignored.
+
+## Configuration Example
+![Custom Browser Flow](require-role-browser-flow.png)
+
+![Require Role Config for Cookie](require-role-config-cookie.png)
+
+![Require Role Config for Login Form](require-role-config-loginform.png)
+
+![Custom Direct Access Grant Flow](require-role-direct-access-grant-flow.png)
+
+![Require Role Config for Login Form](require-role-config-direct-access-grant.png)
+
+![Custom Authentication Flow Bindings](authentication-flow-bindings.png)
+
+![Custom Post Broker Login Flow](require-role-post-broker-login-flow.png)
+
+![Require Role Config for post broker login](require-role-config-post-broker-login.png)
+
+![Custom Identity Provider Post Broker Flow](identity-provider-custom-post-broker-login-flow.png)
+
+![Require Role Access Denied Error](require-role-access-denied-error.png)
 
 ## Roadmap
 
-*if you have a ROADMAP for your project add this here*
-
-
-See the [open issues](#) for a full list of proposed features (and known issues).
-
-
-## Set up
-*how can i start and fly this project*
-
-## Documentation
-*what insights do you have to tell*
-
-```mermaid
-graph TD;
-    A-->B;
-    A-->C;
-    B-->D;
-    C-->D;
-```
-
-use [diagrams](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-diagrams).
+See the [open issues][open-issues] for a full list of proposed features (and known issues).
 
 ## Contributing
 
@@ -64,18 +99,12 @@ Don't forget to give the project a star! Thanks again!
 5. Push to the Branch (`git push origin feature/AmazingFeature`)
 6. Open a Pull Request
 
-More about this in the [CODE_OF_CONDUCT](/CODE_OF_CONDUCT.md) file.
-
+More about this in the [CODE_OF_CONDUCT](./.github/CODE_OF_CONDUCT.md) file.
 
 ## License
 
 Distributed under the MIT License. See [LICENSE](LICENSE) file for more information.
 
-
 ## Contact
 
-it@M - opensource@muenchen.de
-
-<!-- project shields / links -->
-[made-with-love-shield]: https://img.shields.io/badge/made%20with%20%E2%9D%A4%20by-it%40M-yellow?style=for-the-badge
-[itm-opensource]: https://opensource.muenchen.de/
+it@M - <opensource@muenchen.de>
